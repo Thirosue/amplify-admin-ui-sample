@@ -1,0 +1,7 @@
+type Blog @model {
+  id: ID!
+  title: String!
+  description: String!
+  body: String!
+  imagePath: String!
+}

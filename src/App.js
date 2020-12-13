@@ -10,6 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import DialogContent from '@material-ui/core/DialogContent';
 import Box from '@material-ui/core/Box';
 import Link from '@material-ui/core/Link';
+import useBlog from './hook/useBlog'
 
 const theme = createMuiTheme();
 
@@ -44,41 +45,19 @@ const useStyles = makeStyles({
   },
 });
 
-const sampleContent = `
-# Quasar App
-
-A Quasar Framework Survey App Sample
-
-## Sample Page
-
-https://thirosue.github.io/quasar-survey-sample/#/
-
-## Install the dependencies
-
-yarn
-
-### Start the app in development mode (hot-code reloading, error reporting, etc.)
-
-yarn dev
-
-### Lint the files
-
-yarn run lint
-
-### Build the app for production
-
-yarn run build
-
-### Customize the configuration
-
-See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).
-`
-
 function App() {
   const classes = useStyles();
   const [detail, setDetail] = React.useState(false);
+  const { blogs } = useBlog(); // <------ カスタムフックを利用する
+  const [id, setId] = React.useState(1); // <------ 選択したブログID用
 
-  const handleClick = date => {
+  React.useEffect(() => {
+    console.log(blogs)
+  }, [blogs]);
+
+  const handleClick = async id => {
+    console.log('select blog id : %s', id);
+    setId(id - 1) // ブログIDをセットする
     setDetail(true)
   }
 
@@ -91,23 +70,26 @@ function App() {
           </ThemeProvider>
           <Box mb="1.5rem" />
           <Grid container spacing={3}>
-            <Grid item xs={12} sm={4} md={3}>
-              <Card onClick={() => handleClick(1)}>
-                <CardMedia
-                  className={classes.media}
-                  image="/amplify-admin-ui-sample/static/1.jpg"
-                />
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="h2">
-                    Quasar App Build
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary" component="p">
-                    Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging
-                    across all continents except Antarctica
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
+            {/* リストレンダリング */}
+            {0 < blogs.length && blogs.sort((a, b) => a.id - b.id).map(blog =>
+              <Grid key={blog.id} item xs={12} sm={4} md={3}>
+                {/* ブログ選択時はブログIDを渡す */}
+                <Card onClick={() => handleClick(blog.id)}>
+                  <CardMedia
+                    className={classes.media}
+                    image={"/amplify-admin-ui-sample/" + blog.imagePath}
+                  />
+                  <CardContent>
+                    <Typography gutterBottom variant="h5" component="h2">
+                      {blog.title}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary" component="div">
+                      {blog.description}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            )}
           </Grid>
         </>
       )}
@@ -115,17 +97,18 @@ function App() {
         <div className={classes.root}>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={12} md={12}>
+              {/* 選択したブログを表示する */}
               <Card>
                 <CardMedia
                   className={classes.detail}
-                  image="/amplify-admin-ui-sample/static/1.jpg"
+                  image={"/amplify-admin-ui-sample/" + blogs[id].imagePath}
                 />
                 <CardContent>
                   <Typography className={classes.title} gutterBottom variant="h4" component="h2">
-                    Quasar App Build
+                    {blogs[id].title}
                   </Typography>
-                  <Typography className={classes.content} variant="subtitle1" color="textSecondary" component="p">
-                    <ReactMarkdown>{sampleContent}</ReactMarkdown>
+                  <Typography className={classes.content} variant="subtitle1" color="textSecondary" component="div">
+                    <ReactMarkdown>{blogs[id].body}</ReactMarkdown>
                   </Typography>
                 </CardContent>
               </Card>
