@@ -124,7 +124,7 @@ function App() {
                   <Typography className={classes.title} gutterBottom variant="h4" component="h2">
                     Quasar App Build
                   </Typography>
-                  <Typography className={classes.content} variant="subtitle1" color="textSecondary" component="p">
+                  <Typography className={classes.content} variant="subtitle1" color="textSecondary" component="div">
                     <ReactMarkdown>{sampleContent}</ReactMarkdown>
                   </Typography>
                 </CardContent>
